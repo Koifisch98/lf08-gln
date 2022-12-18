@@ -4,22 +4,25 @@ import socket
 
 class Client(computer.Computer):
     
-    __remoteIP = "127.0.0.1"
-    __remotePort = 169
+    __remoteIP = None
+    __remotePort = None
     computer.Specs.powerSupply = "550 Watt be quiet!"
     computer.Specs.getInfo()
     
-    def createSocket(remoteIP, remotePort):
-        c_socket = socket.socket()
-        c_socket.connect((remoteIP, remotePort))
+    def createSocket(self, remoteIP, remotePort):
+        csocket = socket.socket()
+        self.__remoteIP = remoteIP
+        self.__remotePort = remotePort
+        csocket.connect((self.__remoteIP, self.__remotePort))
         
         print("You are connected with ", remoteIP , ":" , remotePort )
-        return c_socket
+        self.__c_socket = csocket
     
     
     
-    def sendData(c_socket, string):
+    def sendData(self, string):
         
+        c_socket = self.__c_socket
         if string == None:
             while True:
                 string = input("Befehl eingeben: ")
@@ -51,7 +54,9 @@ class Client(computer.Computer):
                     c_socket.close()
     
     # Create the client socket
-    client_socket = createSocket(__remoteIP, __remotePort)
+MyClient = Client(computer.Specs._cpu,computer.Specs._cpuSpeed," ",computer.Specs._ram,computer.Specs._os,computer.Specs._ip)
+MyClient.createSocket("127.0.0.1", 169)
     
     # Start the Client loop
-    sendData(client_socket, None)
+    
+MyClient.sendData(None)

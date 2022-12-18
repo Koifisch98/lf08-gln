@@ -6,22 +6,24 @@ import time
 class Server(computer.Computer):
     
     _service = ""
-    _sockIP = None
-    _sockPort = None
+    __sockIP = None
+    __sockPort = None
+    sock = None
     
     
     computer.Specs.powerSupply = "500 Watt Inter-Tech ASPower"
     computer.Specs.getInfo()
 
-    def create_Socket(ip, port):
+    def create_Socket(self, ip, port):
         try:
             # Create the server socket
             server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+            self.__sockIP = ip
+            self.__sockPort = port
             # Bind the socket to the IP and port
             server_socket.bind((ip, port))
-            
-            return server_socket
+            self.sock = server_socket
             
             
         except Exception as e:
@@ -31,15 +33,15 @@ class Server(computer.Computer):
             exit()
             
     # Start the Socket creation function
-    server_socket = create_Socket("127.0.0.1", 169)
+
     
-    def runningServer(self, server_socket):
+    def runningServer(self):
         try:
-            
+            server_socket = self.sock
             # Start listening for incoming connections
             server_socket.listen(5)
 
-            print("Server listening on 127.0.0.1:169" )
+            print("Server listening on " + self.__sockIP + ":" + str(self.__sockPort))
             
             # Accept incoming connections
             client_socket, address = server_socket.accept()
@@ -67,7 +69,7 @@ class Server(computer.Computer):
         except Exception as e:
             print(f"Error in runningServer(): {e}")
             # Get back into the running Loop after printing Exception
-            self.runningServer(self.server_socket)
+            self.runningServer()
             
 
     
@@ -79,4 +81,5 @@ class Server(computer.Computer):
 # Initialize Server Object
 MyServer = Server(computer.Specs._cpu,computer.Specs._cpuSpeed," ",computer.Specs._ram,computer.Specs._os,computer.Specs._ip)
 # Start the server loop
-MyServer.runningServer(MyServer.server_socket)
+MyServer.create_Socket("127.0.0.1", 169)
+MyServer.runningServer()
